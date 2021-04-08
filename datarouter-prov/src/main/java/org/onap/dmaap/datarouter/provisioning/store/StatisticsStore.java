@@ -3,6 +3,7 @@ package org.onap.dmaap.datarouter.provisioning.store;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,9 +55,13 @@ public class StatisticsStore {
   private PreparedStatement makePreparedStatement(String feedids, Connection conn) throws SQLException, ParseException {
     String sql;
     eventlogger.info("Generating sql query to get Statistics resultset. ");
-    sql =  "SELECT * FROM LOG_RECORDS WHERE id in(" + feedids + ")";
+    sql =  "SELECT * FROM LOG_RECORDS WHERE id in(?)";
     eventlogger.debug("SQL Query for Statistics resultset. " + sql);
-    return conn.prepareStatement(sql);
+    PreparedStatement statement = conn.prepareStatement(sql);
+    String[] feedIds = feedids.split(",");
+    Array feedIdsParam = conn.createArrayOf("VARCHAR", feedIds);
+    statement.setArray(1, feedIdsParam);
+    return statement;
   }
 
 
