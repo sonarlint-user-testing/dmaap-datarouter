@@ -23,7 +23,7 @@ public class StatisticsStore {
   private static final EELFLogger eventlogger = EELFManager.getInstance().getLogger("EventLog");
 
   public void getRecordsForSQL(String feedid, String outputType, ServletOutputStream out,
-                               HttpServletResponse resp) {
+    HttpServletResponse resp) {
     try {
       try (Connection conn = ProvDbUtils.getInstance().getConnection();
            PreparedStatement ps = makePreparedStatement(feedid, conn);
@@ -54,9 +54,11 @@ public class StatisticsStore {
   private PreparedStatement makePreparedStatement(String feedid, Connection conn) throws SQLException, ParseException {
     String sql;
     eventlogger.info("Generating sql query to get Statistics resultset. ");
-    sql =  "SELECT * FROM LOG_RECORDS WHERE id=" + feedid;
+    sql = "SELECT * FROM LOG_RECORDS WHERE id= ?";
     eventlogger.debug("SQL Query for Statistics resultset. " + sql);
-    return conn.prepareStatement(sql);
+    PreparedStatement statement = conn.prepareStatement(sql);
+    statement.setString(1, feedid);
+    return statement;
   }
 
 
@@ -64,8 +66,8 @@ public class StatisticsStore {
    * rsToJson - Converting RS to JSON object.
    *
    * @param out ServletOutputStream
-   * @param rs as ResultSet
-   * @throws IOException input/output exception
+   * @param rs  as ResultSet
+   * @throws IOException  input/output exception
    * @throws SQLException SQL exception
    */
   private void rsToCSV(ResultSet rs, ServletOutputStream out) throws IOException, SQLException {
@@ -106,8 +108,8 @@ public class StatisticsStore {
    * rsToJson - Converting RS to JSON object.
    *
    * @param out ServletOutputStream
-   * @param rs as ResultSet
-   * @throws IOException input/output exception
+   * @param rs  as ResultSet
+   * @throws IOException  input/output exception
    * @throws SQLException SQL exception
    */
   private void rsToJson(ResultSet rs, ServletOutputStream out) throws IOException, SQLException {
