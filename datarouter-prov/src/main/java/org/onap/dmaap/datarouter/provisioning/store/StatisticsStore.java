@@ -52,11 +52,12 @@ public class StatisticsStore {
   }
 
   private PreparedStatement makePreparedStatement(String feedid, Connection conn) throws SQLException, ParseException {
-    String sql;
     eventlogger.info("Generating sql query to get Statistics resultset. ");
-    sql =  "SELECT * FROM LOG_RECORDS WHERE id=" + feedid;
+    String sql =  "SELECT * FROM LOG_RECORDS WHERE id=?";
+    PreparedStatement statement = conn.prepareStatement(sql);
+    statement.setString(1, feedid);
     eventlogger.debug("SQL Query for Statistics resultset. " + sql);
-    return conn.prepareStatement(sql);
+    return statement;
   }
 
 
